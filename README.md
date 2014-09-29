@@ -14,7 +14,7 @@ Sep 29, 2014: WIP for release as an L4 package.
 1. Add the service provider to the providers array in `app/config/app.php`:
 
     ```
-    'GlobeCode\LaravelMultiTenant\LaravelMultiTenantServiceProvider',
+    'GlobeCode\LaravelMultiTenant\LaravelMultiTenantServiceProvider'
     ```
 
 1. `cd` into your project directory and update via _Composer_:
