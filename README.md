@@ -7,25 +7,25 @@ Sep 29, 2014: WIP for release as an L4 package.
 
 1. Require this package in your `composer.json` file in the `"require"` block:
 
-    ```
+    ```php
     "globecode/laravel-multitenant": "dev-master"
     ```
 
 1. Add the service provider to the providers array in `app/config/app.php`:
 
-    ```
+    ```php
     'GlobeCode\LaravelMultiTenant\LaravelMultiTenantServiceProvider'
     ```
 
 1. `cd` into your project directory and update via _Composer_:
 
-    ```
+    ```php
     composer update
     ```
 
 1. Publish the `config` to your application. This allows you to change the name of the _Tenant_ column name in your schema. A `config` file will be installed to `app/config/packages/globecode/laravel-multitenant/` which you can edit:
 
-    ```
+    ```php
     php artisan config:publish globecode/laravel-multitenant
     ```
 
@@ -33,7 +33,7 @@ Sep 29, 2014: WIP for release as an L4 package.
 
 1. Add the `getTenantId()` method to your `User` (and any other "scoped" models) or just once in a `BaseModel` (recommended):
 
-    ```
+    ```php
     /**
      * Get the value to scope the "tenant id" with.
      *
@@ -47,25 +47,25 @@ Sep 29, 2014: WIP for release as an L4 package.
 
 1. Optional Global Override. If you want to globally override scope, such as for an _Admin_, then add the `isAdmin()` method to your `User` model. The `ScopedByTenant` trait will look for this method and automatically override the scope on all queries if this method returns `true`:
 
-    ```
-    /**
-     * Does the current user have an 'admin' role?
-     *
-     * @return bool
-     */
-    public function isAdmin()
-    {
-        // Change to return true using whatever
-        // roles/permissions you use in your app.
-        return $this->hasRole('admin');
-    }
-    ```
+```php
+/**
+ * Does the current user have an 'admin' role?
+ *
+ * @return bool
+ */
+public function isAdmin()
+{
+    // Change to return true using whatever
+    // roles/permissions you use in your app.
+    return $this->hasRole('admin');
+}
+```
 
 # Usage
 
 1. Scope a model using the `ScopedByTenant` trait to make all queries on that model globally scoped to a Tenant. Never worry about accidentally querying outside a Tenant's data!
 
-    ```
+    ```php
     <?php namespace Acme;
 
     use GlobeCode\LaravelMultiTenant\ScopedByTenant;
@@ -96,8 +96,7 @@ Sep 29, 2014: WIP for release as an L4 package.
 
     A: Globally __remove__ scope from a _Controller_, such as in an _Admin_ situation:
 
-
-    ```
+    ```php
     <?php
 
     use GlobeCode\LaravelMultiTenant\ScopedByTenant;
@@ -144,192 +143,192 @@ Note: You can use any of the methods on the `ScopedByTenant` trait in your model
 
 If you use repositories, you will need to _build_ off of the `TenantScope` class instead of the `ScopedByTenant` trait. If you look at the `TenantScope` class you will see there are _extensions_ to `builder`, these are methods available to your repositories; the trait won't work in repos.
 
-    ```
-    <?php namespace Acme\Repositories;
+```php
+<?php namespace Acme\Repositories;
 
-    use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Model;
 
-    use Acme\Example;
-    use Acme\Repositories\ExampleRepository
+use Acme\Example;
+use Acme\Repositories\ExampleRepository
 
-    class EloquentExampleRepository extends ExampleRepository {
+class EloquentExampleRepository extends ExampleRepository {
 
-        /**
-         * @var Example
-         */
-        protected $model;
+    /**
+     * @var Example
+     */
+    protected $model;
 
-        /**
-         * Method extensions from TenantScope class
-         */
-        protected $whereTenant;
-        protected $applyTenant;
-        protected $removeTenant;
+    /**
+     * Method extensions from TenantScope class
+     */
+    protected $whereTenant;
+    protected $applyTenant;
+    protected $removeTenant;
 
-        public function __construct(Example $model)
-        {
-            $this->model = $model;
+    public function __construct(Example $model)
+    {
+        $this->model = $model;
 
-            $this->whereTenant = null;
-            $this->applyTenant = null;
-            $this->removeTenant = false;
-        }
-
-        /**
-         * Example get all using scope.
-         */
-        public function getAll()
-        {
-            return $this->getQueryBuilder()->get();
-        }
-
-        /**
-         * Example get by id using scope.
-         */
-        public function getById($id)
-        {
-            return $this->getQueryBuilder()->find((int) $id);
-        }
-
-        /**
-         * Softdelete, include trashed.
-         *
-         * @return void
-         */
-        public function withTrashed()
-        {
-            $this->withTrashed = true;
-
-            return $this;
-        }
-
-        /**
-         * Limit scope to specific Tenant
-         * Local method on repo, not on TenantScope.
-         *
-         * @param  integer  $id
-         */
-        public function whereTenant($id)
-        {
-            $this->whereTenant = $id;
-
-            return $this;
-        }
-
-        /**
-         * Remove Tenant scope.
-         */
-        public function removeTenant()
-        {
-            $this->removeTenant = true;
-
-            return $this;
-        }
-
-        /**
-         * Limit scope to specific Tenant(s)
-         *
-         * @param  int|array $arg
-         */
-        public function applyTenant($arg)
-        {
-            $this->applyTenant = $arg;
-
-            return $this;
-        }
-
-        /**
-         * Expand scope to all Tenants.
-         */
-        public function allTenants()
-        {
-            return $this->removeTenant();
-        }
-
-        protected function getQualifiedTenantColumn()
-        {
-            $tenantColumn = Config::get('laravel-multitenant::tenant_column');
-
-            return $this->model->getTable() .'.'. $tenantColumn;
-        }
-
-        /**
-         * Returns a Builder instance for use in constructing a query, honoring the
-         * current filters. Resets the filters, ready for the next query.
-         *
-         * Example usage:
-         * $result = $this->getQueryBuilder()->find($id);
-         *
-         * @return \Illuminate\Database\Query\Builder
-         */
-        protected function getQueryBuilder()
-        {
-            $modelClass = $this->model;
-
-            $builder = with(new $modelClass)->newQuery();
-
-            if ( ! is_null($this->whereTenant))
-                $builder->where($this->getQualifiedTenantColumn(), $this->whereTenant);
-
-            if ($this->applyTenant)
-                $builder->applyTenant($this->applyTenant);
-
-            if ($this->removeTenant)
-                $builder->removeTenant();
-
-            $this->whereTenant = null;
-            $this->applyTenant = null;
-            $this->removeTenant = null;
-
-            return $builder;
-        }
+        $this->whereTenant = null;
+        $this->applyTenant = null;
+        $this->removeTenant = false;
     }
 
-    ```
+    /**
+     * Example get all using scope.
+     */
+    public function getAll()
+    {
+        return $this->getQueryBuilder()->get();
+    }
+
+    /**
+     * Example get by id using scope.
+     */
+    public function getById($id)
+    {
+        return $this->getQueryBuilder()->find((int) $id);
+    }
+
+    /**
+     * Softdelete, include trashed.
+     *
+     * @return void
+     */
+    public function withTrashed()
+    {
+        $this->withTrashed = true;
+
+        return $this;
+    }
+
+    /**
+     * Limit scope to specific Tenant
+     * Local method on repo, not on TenantScope.
+     *
+     * @param  integer  $id
+     */
+    public function whereTenant($id)
+    {
+        $this->whereTenant = $id;
+
+        return $this;
+    }
+
+    /**
+     * Remove Tenant scope.
+     */
+    public function removeTenant()
+    {
+        $this->removeTenant = true;
+
+        return $this;
+    }
+
+    /**
+     * Limit scope to specific Tenant(s)
+     *
+     * @param  int|array $arg
+     */
+    public function applyTenant($arg)
+    {
+        $this->applyTenant = $arg;
+
+        return $this;
+    }
+
+    /**
+     * Expand scope to all Tenants.
+     */
+    public function allTenants()
+    {
+        return $this->removeTenant();
+    }
+
+    protected function getQualifiedTenantColumn()
+    {
+        $tenantColumn = Config::get('laravel-multitenant::tenant_column');
+
+        return $this->model->getTable() .'.'. $tenantColumn;
+    }
+
+    /**
+     * Returns a Builder instance for use in constructing a query, honoring the
+     * current filters. Resets the filters, ready for the next query.
+     *
+     * Example usage:
+     * $result = $this->getQueryBuilder()->find($id);
+     *
+     * @return \Illuminate\Database\Query\Builder
+     */
+    protected function getQueryBuilder()
+    {
+        $modelClass = $this->model;
+
+        $builder = with(new $modelClass)->newQuery();
+
+        if ( ! is_null($this->whereTenant))
+            $builder->where($this->getQualifiedTenantColumn(), $this->whereTenant);
+
+        if ($this->applyTenant)
+            $builder->applyTenant($this->applyTenant);
+
+        if ($this->removeTenant)
+            $builder->removeTenant();
+
+        $this->whereTenant = null;
+        $this->applyTenant = null;
+        $this->removeTenant = null;
+
+        return $builder;
+    }
+}
+
+```
 
 # Seeding
 
 You can manually override the scoping in your seed files to avoid difficult lookups for relations, by setting the __override__ manually:
 
-    ```
-    <?php
+```php
+<?php
 
-    use Acme\User;
+use Acme\User;
 
-    use GlobeCode\LaravelMultiTenant\TenantScope;
+use GlobeCode\LaravelMultiTenant\TenantScope;
 
-    class UsersTableSeeder extends DatabaseSeeder {
+class UsersTableSeeder extends DatabaseSeeder {
 
-        public function run()
-        {
-            // Manually override tenant scoping.
-            TenantScope::setOverride();
+    public function run()
+    {
+        // Manually override tenant scoping.
+        TenantScope::setOverride();
 
-            User::create([
-                'id' => 1,
-                'tenant_id' => null, // an admin
-                'email' => 'admin@us.com',
-                'password' => 'secret',
+        User::create([
+            'id' => 1,
+            'tenant_id' => null, // an admin
+            'email' => 'admin@us.com',
+            'password' => 'secret',
 
-                'created_at' => time(),
-                'updated_at' => time()
-            ]);
+            'created_at' => time(),
+            'updated_at' => time()
+        ]);
 
-            User::create([
-                'id' => 2,
-                'tenant_id' => 1000, // a tenant
-                'email' => 'user@tenant.com',
-                'password' => 'secret',
+        User::create([
+            'id' => 2,
+            'tenant_id' => 1000, // a tenant
+            'email' => 'user@tenant.com',
+            'password' => 'secret',
 
-                'created_at' => time(),
-                'updated_at' => time()
-            ]);
+            'created_at' => time(),
+            'updated_at' => time()
+        ]);
 
-            ...
-        }
+        ...
     }
+}
 
-    ```
+```
 
 Note: set the `tenant_id` to null for any in-house staff/admins.
 
