@@ -1,0 +1,22 @@
+{
+    "name": "globecode/laravel-multitenant",
+    "description": "Laravel Multi-Tenant",
+    "keywords": ["laravel", "multi-tenant", "scoping"],
+    "license": "MIT",
+    "authors": [
+        {
+            "name": "Jhaura Wachsman",
+            "email": "jw@jhaurawachsman.com"
+        }
+    ],
+    "require": {
+        "php": ">=5.4.0",
+        "illuminate/support": "4.2.*"
+    },
+    "autoload": {
+        "psr-0": {
+            "GlobeCode\\LaravelMultiTenant\\": "src/"
+        }
+    },
+    "minimum-stability": "stable"
+}
