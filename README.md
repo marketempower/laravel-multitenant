@@ -29,7 +29,7 @@ Sep 29, 2014: WIP for release as an L4 package.
     php artisan config:publish globecode/laravel-multitenant
     ```
 
-1. Run the migrations to setup the necessary schema.
+1. Run migrations to setup the necessary schema. Example migrations are provided in the Package `migrations` folder.
 
 1. Add the `getTenantId()` method to your `User` (and any other "scoped" models) or just once in a `BaseModel` (recommended):
 
@@ -66,7 +66,7 @@ Sep 29, 2014: WIP for release as an L4 package.
 1. Scope a model using the `ScopedByTenant` trait to make all queries on that model globally scoped to a Tenant. Never worry about accidentally querying outside a Tenant's data!
 
     ```
-    <?php namespace Acme\Examples;
+    <?php namespace Acme;
 
     use GlobeCode\LaravelMultiTenant\ScopedByTenant;
 
@@ -87,7 +87,7 @@ Sep 29, 2014: WIP for release as an L4 package.
          */
         public function tenant()
         {
-            return $this->belongsTo('Acme\Tenants\Tenant');
+            return $this->belongsTo('Acme\Tenant');
         }
     }
     ```
@@ -105,7 +105,7 @@ Sep 29, 2014: WIP for release as an L4 package.
     class AdminExamplesController {
 
         /**
-         * @var Acme\Examples\ExampleRepository
+         * @var Acme\Repositories\ExampleRepository
          */
         protected $exampleRepo;
 
@@ -145,13 +145,14 @@ Note: You can use any of the methods on the `ScopedByTenant` trait in your model
 If you use repositories, you will need to _build_ off of the `TenantScope` class instead of the `ScopedByTenant` trait. If you look at the `TenantScope` class you will see there are _extensions_ to `builder`, these are methods available to your repositories; the trait won't work in repos.
 
     ```
-    <?php namespace Acme\Examples;
+    <?php namespace Acme\Repositories;
 
     use Illuminate\Database\Eloquent\Model;
 
-    use Acme\Examples\Example;
+    use Acme\Example;
+    use Acme\Repositories\ExampleRepository
 
-    class EloquentExampleRepository {
+    class EloquentExampleRepository extends ExampleRepository {
 
         /**
          * @var Example
@@ -159,7 +160,7 @@ If you use repositories, you will need to _build_ off of the `TenantScope` class
         protected $model;
 
         /**
-         * Method extensions from TenantScope
+         * Method extensions from TenantScope class
          */
         protected $whereTenant;
         protected $applyTenant;
@@ -293,7 +294,7 @@ You can manually override the scoping in your seed files to avoid difficult look
     ```
     <?php
 
-    use Acme\Users\User;
+    use Acme\User;
 
     use GlobeCode\LaravelMultiTenant\TenantScope;
 
