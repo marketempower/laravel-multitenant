@@ -137,7 +137,7 @@ Sep 29, 2014: WIP for release as an L4 package.
 
     B: Globally __remove__ scope by using the `Auth` check in the `ScopedByTenant` trait's `bootTenantId()` method. See the instructions in the __Setup__ -> _Optional Global Override_ section above.
 
-Note: You can use any of the methods on the `ScopedByTenant` trait in your models and controllers.
+Note: You can use any of the `public` methods on the `ScopedByTenant` trait in your models and controllers.
 
 # Repositories
 
