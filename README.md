@@ -5,14 +5,10 @@ Sep 29, 2014: WIP for release as an L4 package.
 
 # Installation
 
-1. Require this package in your `composer.json` file and run `composer update`:
+1. Require this package in your `composer.json` file in the `"require"` block:
 
     ```
     "globecode/laravel-multitenant": "dev-master"
-    ```
-
-    ```
-    composer update
     ```
 
 1. Add the service provider to the providers array in `app/config/app.php`:
@@ -21,7 +17,13 @@ Sep 29, 2014: WIP for release as an L4 package.
     'GlobeCode\LaravelMultiTenant\LaravelMultiTenantServiceProvider',
     ```
 
-1. Publish the `config` to your application. This allows you to change the name of the _Tenant_ column name in your schema. A `config` file will be installed to `app/config/packages/globecode/laravel-multitenant` which you can edit:
+1. `cd` into your project directory and update via _Composer_:
+
+    ```
+    composer update
+    ```
+
+1. Publish the `config` to your application. This allows you to change the name of the _Tenant_ column name in your schema. A `config` file will be installed to `app/config/packages/globecode/laravel-multitenant/` which you can edit:
 
     ```
     php artisan config:publish globecode/laravel-multitenant
