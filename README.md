@@ -19,13 +19,13 @@ Sep 29, 2014: WIP for release as an L4 package.
 
 1. `cd` into your project directory and update via _Composer_:
 
-    ```php
+    ```bash
     composer update
     ```
 
 1. Publish the `config` to your application. This allows you to change the name of the _Tenant_ column name in your schema. A `config` file will be installed to `app/config/packages/globecode/laravel-multitenant/` which you can edit:
 
-    ```php
+    ```bash
     php artisan config:publish globecode/laravel-multitenant
     ```
 
@@ -47,19 +47,19 @@ Sep 29, 2014: WIP for release as an L4 package.
 
 1. Optional Global Override. If you want to globally override scope, such as for an _Admin_, then add the `isAdmin()` method to your `User` model. The `ScopedByTenant` trait will look for this method and automatically override the scope on all queries if this method returns `true`:
 
-```php
-/**
- * Does the current user have an 'admin' role?
- *
- * @return bool
- */
-public function isAdmin()
-{
-    // Change to return true using whatever
-    // roles/permissions you use in your app.
-    return $this->hasRole('admin');
-}
-```
+    ```php
+    /**
+     * Does the current user have an 'admin' role?
+     *
+     * @return bool
+     */
+    public function isAdmin()
+    {
+        // Change to return true using whatever
+        // roles/permissions you use in your app.
+        return $this->hasRole('admin');
+    }
+    ```
 
 # Usage
 
@@ -283,7 +283,6 @@ class EloquentExampleRepository extends ExampleRepository {
         return $builder;
     }
 }
-
 ```
 
 # Seeding
@@ -327,7 +326,6 @@ class UsersTableSeeder extends DatabaseSeeder {
         ...
     }
 }
-
 ```
 
 Note: set the `tenant_id` to null for any in-house staff/admins.
