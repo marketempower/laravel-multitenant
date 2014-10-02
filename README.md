@@ -11,7 +11,7 @@ Sep 29, 2014: WIP for release as an L4 package.
     "globecode/laravel-multitenant": "dev-master"
     ```
 
-1. Add the service provider to the providers array in `app/config/app.php`:
+1. Add the service provider to the providers array in `app/config/app.php`. This is only used for the "Publish `config`" command two steps down:
 
     ```php
     'GlobeCode\LaravelMultiTenant\LaravelMultiTenantServiceProvider'
@@ -29,7 +29,7 @@ Sep 29, 2014: WIP for release as an L4 package.
     php artisan config:publish globecode/laravel-multitenant
     ```
 
-1. Run migrations to setup the necessary schema. Example migrations are provided in the Package `migrations` folder.
+1. Create and run new _migrations_ to setup the necessary schema. Example migrations are provided in the Package `migrations` folder.
 
 1. Add the `getTenantId()` method to your `User` (and any other "scoped" models) or just once in a `BaseModel` (recommended):
 
@@ -45,7 +45,7 @@ Sep 29, 2014: WIP for release as an L4 package.
     }
     ```
 
-1. Optional Global Override. If you want to globally override scope, such as for an _Admin_, then add the `isAdmin()` method to your `User` model. The `ScopedByTenant` trait will look for this method and automatically override the scope on all queries if this method returns `true`:
+1. Optional __Global Override__. If you want to globally override scope, such as for an _Admin_, then add the `isAdmin()` method to your `User` model. The `ScopedByTenant` trait will look for this method and automatically override the scope on all queries if this method returns `true`:
 
     ```php
     /**
@@ -135,13 +135,15 @@ Sep 29, 2014: WIP for release as an L4 package.
     __Or__
 
 
-    B: Globally __remove__ scope by using the `Auth` check in the `ScopedByTenant` trait's `bootTenantId()` method. See the instructions in the __Setup__ -> _Optional Global Override_ section above.
+    B: Globally __remove__ scope by using the `Auth` check in the `ScopedByTenant` trait's `bootTenantId()` method. See the instructions in the __Setup -> Optional Global Override__ section above.
 
-Note: You can use any of the `public` methods on the `ScopedByTenant` trait in your models and controllers.
+__Note__: You can use any of the `public` methods on the `ScopedByTenant` trait in your models and controllers.
 
 # Repositories
 
-If you use repositories, you will need to _build_ off of the `TenantScope` class instead of the `ScopedByTenant` trait. If you look at the `TenantScope` class you will see there are _extensions_ to `builder`, these are methods available to your repositories; the trait won't work in repos.
+If you use repositories, you will need to _build queries_ off of the `TenantScope` class instead of the `ScopedByTenant` trait. If you look at the `TenantScope` class you will see there are _extensions_ to [\Illuminate\Database\Query\Builder](http://laravel.com/api/4.2/Illuminate/Database/Query/Builder.html), these are methods available to your repositories; the trait won't work in repos.
+
+Here is an example _Eloquent_ repository with all the necessary methods for scoping. These methods should go in an `EloquentBaseRepository` class, to keep things DRY.
 
 ```php
 <?php namespace Acme\Repositories;
@@ -317,7 +319,7 @@ class UsersTableSeeder extends DatabaseSeeder {
 }
 ```
 
-Note: set the `tenant_id` to null for any in-house staff/admins.
+__Note__: set the `tenant_id` field (or whatever name you chose for the scoping column) on your `User` model to `null` for any in-house staff/admins.
 
 # About
 
