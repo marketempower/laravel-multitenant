@@ -191,18 +191,6 @@ class EloquentExampleRepository extends ExampleRepository {
     }
 
     /**
-     * Softdelete, include trashed.
-     *
-     * @return void
-     */
-    public function withTrashed()
-    {
-        $this->withTrashed = true;
-
-        return $this;
-    }
-
-    /**
      * Limit scope to specific Tenant
      * Local method on repo, not on TenantScope.
      *
@@ -253,8 +241,9 @@ class EloquentExampleRepository extends ExampleRepository {
     }
 
     /**
-     * Returns a Builder instance for use in constructing a query, honoring the
-     * current filters. Resets the filters, ready for the next query.
+     * Returns a Builder instance for use in constructing
+     * a query, honoring the current filters. Resets the
+     * filters, ready for the next query.
      *
      * Example usage:
      * $result = $this->getQueryBuilder()->find($id);
