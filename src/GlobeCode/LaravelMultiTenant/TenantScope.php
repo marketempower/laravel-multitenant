@@ -90,7 +90,7 @@ class TenantScope implements ScopeInterface {
         $query->setBindings(array_values($bindings['where']));
 
         // Repopulate the query 'wheres' only.
-        $query->wheres = array_values($query->wheres);
+        $query->wheres = is_array($query->wheres) ? array_values($query->wheres) : null;
     }
 
     /**
