@@ -40,7 +40,7 @@ class TenantScope implements ScopeInterface {
     {
         if (self::getOverride() === false)
         {
-            $tenantId = (int) trim(self::getTenantId());
+            $tenantId = trim(self::getTenantId());
 
             if (is_null($tenantId) || empty($tenantId) || $tenantId < 1)
                 throw new TenantIdNotSetException;
