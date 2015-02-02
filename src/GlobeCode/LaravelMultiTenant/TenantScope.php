@@ -40,7 +40,7 @@ class TenantScope implements ScopeInterface {
     {
         if (self::getOverride() === false)
         {
-            $tenantId = (int) trim(self::getTenantId());
+            $tenantId = trim(self::getTenantId());
 
             if (is_null($tenantId) || empty($tenantId) || $tenantId < 1)
                 throw new TenantIdNotSetException;
@@ -90,7 +90,7 @@ class TenantScope implements ScopeInterface {
         $query->setBindings(array_values($bindings['where']));
 
         // Repopulate the query 'wheres' only.
-        $query->wheres = array_values($query->wheres);
+        $query->wheres = is_array($query->wheres) ? array_values($query->wheres) : null;
     }
 
     /**
