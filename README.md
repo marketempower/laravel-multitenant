@@ -139,6 +139,31 @@ Sep 29, 2014: WIP for release as an L4 package.
 
 __Note__: You can use any of the `public` methods on the `ScopedByTenant` trait in your models and controllers.
 
+## MongoDB (Jenssegers\Mongodb)
+
+If you want to use TenantScope in a MongoDB the `getQualifiedTenantColumn` from the trait needs to an override since Mongo does not use JOIN's.
+In your BaseModel add the following
+```php
+<?php
+use GlobeCode\LaravelMultiTenant\ScopedByTenant;
+use Jenssegers\Mongodb\Model as Eloquent;
+
+class BaseModel extends Eloquent{
+	use ScopedByTenant;
+	
+...
+	public function getTenantId()
+	{
+		return (isset($this->tenant_id)) ? $this->tenant_id : null;
+	}
+
+    	public function getQualifiedTenantColumn()
+    	{        
+        	return $this->getTenantColumn();
+    	}
+}
+'''
+
 # Repositories
 
 If you use repositories, you will need to _build queries_ off of the `TenantScope` class instead of the `ScopedByTenant` trait. If you look at the `TenantScope` class you will see there are _extensions_ to [\Illuminate\Database\Query\Builder](http://laravel.com/api/4.2/Illuminate/Database/Query/Builder.html), these are methods available to your repositories; the trait won't work in repos.
