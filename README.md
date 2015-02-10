@@ -162,7 +162,7 @@ class BaseModel extends Eloquent{
         	return $this->getTenantColumn();
     	}
 }
-'''
+```
 
 # Repositories
 
