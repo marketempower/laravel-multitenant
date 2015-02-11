@@ -57,6 +57,7 @@ trait ScopedByTenant {
             }
             else
             {
+		TenantScope::setOverride(false);
                 return TenantScope::setTenantId(Auth::user()->getTenantId());
             }
         }

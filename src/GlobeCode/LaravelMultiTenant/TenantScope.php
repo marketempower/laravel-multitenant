@@ -204,9 +204,9 @@ class TenantScope implements ScopeInterface {
      *
      * TenantScope::setOverride();
      */
-    public static function setOverride()
+    public static function setOverride($override=true)
     {
-        self::$override = true;
+        self::$override = $override;
     }
 
     /**
